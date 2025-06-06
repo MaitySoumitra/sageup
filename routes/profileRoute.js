@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Profile = require('../models/Profile');
 const userAuth = require('../middleware/userAuth');
-
+const authenticate = require('../middleware/auth');
 // ✅ Create profile (only for tutor/institute)
 router.post('/', userAuth, async (req, res) => {
   const { type, subjectsOffered, location, experience, description, availability, fees } = req.body;
@@ -38,20 +38,14 @@ router.post('/', userAuth, async (req, res) => {
 
 
 // ✅ Get logged-in user's profile
-router.get('/me', userAuth, async (req, res) => {
-  const userId = req.user.id; // Coming from token
-
+router.get('/profiles', authenticate, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: userId }).populate('user', 'name email role');
-    if (!profile) {
-      return res.status(404).json({ message: 'Profile not found' });
-    }
-    res.status(200).json({ profile });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    const profiles = await Profile.find();
+    res.json({ profiles });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch profiles' });
   }
 });
-
 
 
 // ✅ Update profile

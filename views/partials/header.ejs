@@ -1,14 +1,139 @@
-<header class="header">
-  <div class="container">
-    <h1 class="logo">SageUp</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SageUp Logo</title>
+  <style>
+    body {
+      background: #fff;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+    }
 
-    <div class="search-container">
-      <input type="search" placeholder="Search profiles..." aria-label="Search profiles" />
-      <button aria-label="Search">&#128269;</button>
+    .header {
+      background-color: #f8f9fa;
+      padding: 1rem 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      animation: popUp 1s ease-in-out;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1E2A78;
+      position: relative;
+    }
+
+    .logo-text::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 3px;
+      bottom: -4px;
+      left: 0;
+      background-color: #00C48C;
+      animation: underline 1.2s ease-in-out forwards 1s;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .search-container input {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .search-container button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      background-color: #00C48C;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .nav-right a {
+      text-decoration: none;
+      color: #1E2A78;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    @keyframes popUp {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes underline {
+      to {
+        width: 100%;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 64 64" fill="none">
+          <path d="M8 16V48C8 50.21 9.79 52 12 52H40" stroke="#1E2A78" stroke-width="4" stroke-linecap="round"/>
+          <path d="M8 16L24 24L40 16" stroke="#1E2A78" stroke-width="4" stroke-linecap="round"/>
+          <path d="M56 12L44 24L56 36" stroke="#00C48C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="logo-text">SageUp</div>
+      </div>
+
+      <div class="search-container">
+        <input type="search" placeholder="Search profiles..." aria-label="Search profiles" />
+        <button aria-label="Search">&#128269;</button>
+      </div>
+
+      <nav class="nav-right">
+        <a href="/login" class="login-btn">Login</a>
+      </nav>
     </div>
-
-    <nav class="nav-right">
-      <a href="/login" class="login-btn">Login</a>
-    </nav>
-  </div>
-</header>
+  </header>
+</body>
+</html>
