@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register - SageUp</title>
+  <link rel="stylesheet" href="/css/register.css" />
+</head>
+<body>
+  <div class="register-container">
+    <h2>Create an Account</h2>
+    <form action="/api/users/register" method="POST" novalidate>
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Your full name" required />
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="example@mail.com" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Create password" required minlength="6" />
+
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="" disabled selected>Select role</option>
+        <option value="student">Student</option>
+        <option value="tutor">tutor</option>
+      </select>
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" placeholder="+1234567890" pattern="[+0-9]{7,15}" />
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+</body>
+</html>
