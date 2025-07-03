@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <style>
+    .dashboard-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    h1 { color: #333; }
+    .button-group { margin-top: 20px; }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0056b3; }
+    .status-message { margin-top: 20px; font-weight: bold; }
+    form#profileForm {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <h1>Welcome, <%= user.name %>!</h1>
+
+    <div class="button-group">
+      <button onclick="showForm()">✏️ <%= profile ? 'Edit Profile' : 'Create Profile' %></button>
+      <button onclick="checkProfileStatus()">📋 Check Profile Status</button>
+    </div>
+
+    <div id="status" class="status-message"></div>
+
+    <!-- ✅ Profile Form -->
+    <form id="profileForm">
+      <h3><%= profile ? 'Edit' : 'Create' %> Your Teaching Profile</h3>
+
+      <label>Type:</label>
+      <select name="type" required>
+        <option value="">Select</option>
+        <option value="private_tutor" <%= profile?.type === 'private_tutor' ? 'selected' : '' %>>Private Tutor</option>
+        <option value="coaching_center" <%= profile?.type === 'coaching_center' ? 'selected' : '' %>>Coaching Center</option>
+        <option value="small_institute" <%= profile?.type === 'small_institute' ? 'selected' : '' %>>Small Institute</option>
+      </select>
+
+      <label>Location:</label>
+      <input type="text" name="location" value="<%= profile?.location || '' %>" required />
+
+      <label>Experience (years):</label>
+      <input type="number" name="experience" value="<%= profile?.experience || '' %>" required />
+
+      <label>Description:</label>
+      <textarea name="description" required><%= profile?.description || '' %></textarea>
+
+      <label>Contact Info (email/phone/website):</label>
+      <input type="text" name="contactInfo" value="<%= profile?.contactInfo || '' %>" required />
+
+      <label>Profile Image URL (optional):</label>
+      <input type="text" name="profileImage" value="<%= profile?.profileImage || '' %>" />
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    const existingProfile = <%- JSON.stringify(profile || null) %>;
+
+    function showForm() {
+      const form = document.getElementById('profileForm');
+      form.style.display = 'block';
+
+      if (existingProfile) {
+        form.type.value = existingProfile.type || '';
+        form.location.value = existingProfile.location || '';
+        form.experience.value = existingProfile.experience || '';
+        form.description.value = existingProfile.description || '';
+        form.contactInfo.value = existingProfile.contactInfo || '';
+        form.profileImage.value = existingProfile.profileImage || '';
+      }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = e.target;
+
+      const body = {
+        type: form.type.value,
+        location: form.location.value,
+        experience: +form.experience.value,
+        description: form.description.value,
+        contactInfo: form.contactInfo.value,
+        profileImage: form.profileImage.value || ''
+      };
+
+      const method = existingProfile ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch('/api/profiles', {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        document.getElementById('status').innerText = data.message || (method === 'PUT' ? 'Updated' : 'Created');
+
+        if (res.ok) {
+          form.reset();
+          form.style.display = 'none';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status').innerText = '❌ Error submitting profile';
+      }
+    });
+
+    async function checkProfileStatus() {
+      try {
+        const res = await fetch('/api/profiles/me');
+        const data = await res.json();
+        if (res.ok && data.profile) {
+          document.getElementById('status').innerText = `📌 Profile Status: ${data.profile.status}`;
+        } else {
+          document.getElementById('status').innerText = '❌ No profile found';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status').innerText = 'Error checking status';
+      }
+    }
+  </script>
+</body>
+</html>

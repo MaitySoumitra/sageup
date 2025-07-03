@@ -3,24 +3,22 @@ const router = express.Router();
 const Profile = require('../models/Profile');
 const userAuth = require('../middleware/userAuth');
 const authenticate = require('../middleware/auth');
+
 // ✅ Create profile (only for tutor/institute)
 router.post('/', userAuth, async (req, res) => {
   const {
     type,
-    subjectsOffered,
     location,
     experience,
     description,
-    availability,
-    fees
+    contactInfo,
+    profileImage
   } = req.body;
 
-  // ✅ Restrict only tutors or institutes
   if (!['tutor', 'institute'].includes(req.user.role)) {
     return res.status(403).json({ message: 'Only tutors or institutes can create profiles' });
   }
 
-  // ✅ Validate profile type
   if (!['private_tutor', 'coaching_center', 'small_institute'].includes(type)) {
     return res.status(400).json({ message: 'Invalid profile type' });
   }
@@ -31,17 +29,15 @@ router.post('/', userAuth, async (req, res) => {
       return res.status(400).json({ message: 'Profile already exists' });
     }
 
-    // ✅ Create profile with status: 'under_review'
     const profile = new Profile({
       user: req.user.id,
       type,
-      subjectsOffered,
       location,
       experience,
       description,
-      availability,
-      fees,
-      status: 'under_review'  // ✅ Important
+      contactInfo,
+      profileImage,
+      status: 'under_review'
     });
 
     await profile.save();
@@ -52,19 +48,17 @@ router.post('/', userAuth, async (req, res) => {
   }
 });
 
-
-
-
-// ✅ Get logged-in user's profile
-router.get('/profiles', authenticate, async (req, res) => {
+// ✅ Get current user's profile
+router.get('/me', userAuth, async (req, res) => {
   try {
-    const profiles = await Profile.find();
-    res.json({ profiles });
+    const profile = await Profile.findOne({ user: req.user.id }).populate('user', 'name email role');
+    if (!profile) return res.status(404).json({ message: 'No profile found' });
+    res.json({ profile });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch profiles' });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // ✅ Update profile
 router.put('/me', userAuth, async (req, res) => {
@@ -86,7 +80,6 @@ router.put('/me', userAuth, async (req, res) => {
   }
 });
 
-
 // ✅ Delete profile
 router.delete('/me', userAuth, async (req, res) => {
   try {
@@ -101,7 +94,6 @@ router.delete('/me', userAuth, async (req, res) => {
   }
 });
 
-
 // ✅ Get all profiles (for students to browse)
 router.get('/', async (req, res) => {
   try {
@@ -113,14 +105,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-
-// ✅ Search profiles by subject or location (optional query filters)
+// ✅ Search profiles by location or name
 router.get('/search', async (req, res) => {
-  const { subject, location } = req.query;
+  const { location } = req.query;
 
   try {
     const filters = {};
-    if (subject) filters.subjectsOffered = { $regex: subject, $options: 'i' };
     if (location) filters.location = { $regex: location, $options: 'i' };
 
     const results = await Profile.find(filters).populate('user', 'name email role');

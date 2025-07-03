@@ -1,23 +1,19 @@
-// middleware/userAuth.js
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 const userAuth = async (req, res, next) => {
-  const token = req.cookies.jwt;
+  const cookieId = req.cookies.cookieId;
+  if (!cookieId) return res.status(401).json({ message: 'Authentication required' });
 
-  if (!token) {
-    return res.status(401).json({ message: 'Authentication required' });
-  }
+  const user = await User.findOne({ cookieId });
+  if (!user || !user.jwtToken) return res.status(403).json({ message: 'Invalid session' });
 
   try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Attach user info to request
-    req.user = decoded;
+    const decoded = jwt.verify(user.jwtToken, process.env.JWT_SECRET);
+    req.user = { id: user._id.toString(), role: user.role };
     next();
   } catch (err) {
-    res.status(401).json({ message: 'Invalid or expired token' });
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
 

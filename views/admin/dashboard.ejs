@@ -47,7 +47,7 @@
           <h3><%= profile.user.name %> (<%= profile.type %>)</h3>
           <p><strong>Email:</strong> <%= profile.user.email %></p>
           <p><strong>Location:</strong> <%= profile.location %></p>
-          <p><strong>Subjects:</strong> <%= profile.subjectsOffered.join(', ') %></p>
+         
           <p><strong>Status:</strong> <%= profile.status %></p>
           
           <form action="/admin/profile/<%= profile._id %>/status" method="POST">

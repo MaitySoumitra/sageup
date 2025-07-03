@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Your Library</title>
+  <style>
+    /* Use same style as subjects page for consistency */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .subject-dashboard {
+      max-width: 1100px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+    }
+
+    .top-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background-color: #f8f9fc;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-left: 10px;
+    }
+
+    .subj-btn {
+      background-color: #5c60f5;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .form-container {
+      display: none;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .library-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .library-table th, .library-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    .library-table th {
+      background-color: #E2E8F0;
+    }
+
+    .download-link {
+      text-decoration: none;
+      color: #5c60f5;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="subject-dashboard">
+    <div class="top-section">
+      <h3>📚 Hello, <%= user.name %>!</h3>
+      <div style="display: flex;">
+        <div class="stat-box">
+          Total Items: <strong><%= libraries.length %></strong>
+        </div>
+        <button class="subj-btn" onclick="toggleForm()">Upload PDF</button>
+      </div>
+    </div>
+
+    <!-- 📤 Upload Form -->
+    <div class="form-container" id="formContainer">
+      <form action="/api/libraries/upload" method="POST" enctype="multipart/form-data">
+
+        <label>Title:</label>
+        <input type="text" name="title" required>
+
+        <label>Description:</label>
+        <textarea name="description" rows="3"></textarea>
+
+        <label>Type:</label>
+        <select name="type" required>
+          <option value="question">Question</option>
+          <option value="solution">Solution</option>
+          <option value="note">Note</option>
+        </select>
+
+        <label>Category (e.g. Class 10 Science):</label>
+        <input type="text" name="category">
+
+        <label>Upload PDF File:</label>
+        <input type="file" name="pdf" accept=".pdf" required>
+
+        <button type="submit" class="subj-btn" style="margin-top: 10px;">Upload</button>
+      </form>
+    </div>
+
+    <!-- 📄 Library Table -->
+    <table class="library-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Uploaded By</th>
+          <th>Download</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% libraries.forEach((item, index) => { %>
+          <tr>
+            <td>#LIB<%= (index + 1).toString().padStart(2, '0') %></td>
+            <td><%= item.title %></td>
+            <td><%= item.type %></td>
+            <td><%= item.category || 'N/A' %></td>
+            <td><%= item.description || '—' %></td>
+            <td><%= item.uploadedBy?.name || 'Unknown' %></td>
+            <td>
+              <a href="<%= item.fileUrl %>" class="download-link" download>Download</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function toggleForm() {
+      const form = document.getElementById('formContainer');
+      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
+</body>
+
+</html>

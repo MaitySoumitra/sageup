@@ -1,143 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title><%= title %></title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f8; }
-    .dashboard-container { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
-    h1 { color: #333; }
-    .button-group { margin-top: 20px; }
-    button {
-      padding: 10px 20px;
-      margin-right: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      background: #f4f6f8;
     }
-    button:hover {
-      background-color: #0056b3;
+    aside {
+      width: 220px;
+      background: #fff;
+      padding: 30px 20px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+      height: 100vh;
     }
-    .status-message { margin-top: 20px; font-weight: bold; }
-    form#profileForm {
-      display: none;
-      margin-top: 20px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
+    aside nav a {
+      display: block;
+      text-decoration: none;
+      padding: 10px;
       border-radius: 8px;
+      color: #333;
+      margin-bottom: 10px;
     }
-    label { display: block; margin-top: 10px; }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+    aside nav a.active, aside nav a:hover {
+      background: #e6f0ff;
+      color: #007bff;
+    }
+    .main-content {
+      flex: 1;
+      padding: 40px;
     }
   </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <h1>Welcome, <%= user.name %>!</h1>
 
-    <div class="button-group">
-      <button onclick="showForm()">➕ Create Profile</button>
-      <button onclick="checkProfileStatus()">📋 Check Profile Status</button>
-    </div>
+  <!-- Sidebar Tabbar -->
+  <aside>
+    <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:30px;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <img src="/images/icon.png" alt="Admin Icon" style="max-width: 150px;height: 50px;">
+  </div>
+</div>
 
-    <div id="status" class="status-message"></div>
+    <nav>
+      <a href="/dashboard/<%= user._id %>/home" class="<%= page === 'home' ? 'active' : '' %>">🏠 Home</a>
+      <a href="/dashboard/<%= user._id %>/course" class="<%= page === 'course' ? 'active' : '' %>">📚 Course</a>
+      <a href="/dashboard/<%= user._id %>/libraries" class="<%= page === 'libraries' ? 'active' : '' %>">🏛 Libraries</a>
+      <a href="/dashboard/<%= user._id %>/review" class="<%= page === 'review' ? 'active' : '' %>">📝 Review</a>
+      <a href="/dashboard/<%= user._id %>/application" class="<%= page === 'application' ? 'active' : '' %>">📄 Application</a>
+      <a href="api/users/logout">🚪 Logout</a>
+    </nav>
+  </aside>
 
-    <form id="profileForm">
-      <h3>Create Your Teaching Profile</h3>
-      <label>Type:</label>
-      <select name="type" required>
-        <option value="">Select</option>
-        <option value="private_tutor">Private Tutor</option>
-        <option value="coaching_center">Coaching Center</option>
-        <option value="small_institute">Small Institute</option>
-      </select>
-
-      <label>Subjects Offered (comma separated):</label>
-      <input type="text" name="subjectsOffered" required>
-
-      <label>Location:</label>
-      <input type="text" name="location" required>
-
-      <label>Experience (years):</label>
-      <input type="number" name="experience" required>
-
-      <label>Description:</label>
-      <textarea name="description" required></textarea>
-
-      <label>Availability Days (comma separated):</label>
-      <input type="text" name="days" placeholder="e.g., Monday,Wednesday,Friday">
-
-      <label>Time Slots (comma separated):</label>
-      <input type="text" name="timeSlots" placeholder="e.g., 10AM-12PM,4PM-6PM">
-
-      <label>Fees:</label>
-      <input type="number" name="fees" required>
-
-      <button type="submit">Submit Profile</button>
-    </form>
+  <!-- Dynamic Main Content -->
+  <div class="main-content">
+    <%- include(`Tabs/${page}`, {user, subjects, editMode, libraries}) %>
   </div>
 
-  <script>
-    function showForm() {
-      document.getElementById('profileForm').style.display = 'block';
-    }
-
-    document.getElementById('profileForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const form = e.target;
-
-      const body = {
-        type: form.type.value,
-        subjectsOffered: form.subjectsOffered.value.split(',').map(s => s.trim()),
-        location: form.location.value,
-        experience: +form.experience.value,
-        description: form.description.value,
-        availability: {
-          days: form.days.value.split(',').map(d => d.trim()),
-          timeSlots: form.timeSlots.value.split(',').map(t => t.trim())
-        },
-        fees: +form.fees.value
-      };
-
-      try {
-        const res = await fetch('/api/profiles', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-
-        const data = await res.json();
-        document.getElementById('status').innerText = data.message || 'Profile created';
-        if (res.ok) {
-          form.reset();
-          form.style.display = 'none';
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById('status').innerText = 'Error submitting profile';
-      }
-    });
-
-    async function checkProfileStatus() {
-      try {
-        const res = await fetch('/api/profiles/me');
-        const data = await res.json();
-        if (res.ok && data.profile) {
-          document.getElementById('status').innerText = `📌 Profile Status: ${data.profile.status}`;
-        } else {
-          document.getElementById('status').innerText = '❌ No profile found';
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById('status').innerText = 'Error checking status';
-      }
-    }
-  </script>
 </body>
 </html>

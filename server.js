@@ -17,14 +17,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+app.use('/uploads', express.static('uploads')); 
 app.use(cookieParser()); // for parsing cookies
 // Example EJS route
 app.get('/ejs-example', (req, res) => {
     res.render('example', { title: 'EJS Example', message: 'Hello from EJS!' });
 });
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Adjust this to your frontend URL
+  credentials: true, // Allow cookies to be sent
+}));
 
 
 // Connect to MongoDB
@@ -41,6 +44,8 @@ app.use('/api/profiles', require('./routes/profileRoute'));
 app.use('/api/contacts',    require('./routes/contactRoute'));
 app.use('/admin', require('./routes/adminRoute'));
 app.use('/', require('./routes/teacherRoute'));
+app.use('/api/subjects', require('./routes/subjectRoute'));
+app.use('/api/libraries', require('./routes/librariesRoute'));
 
 
 // Default route
@@ -55,6 +60,7 @@ app.get('/register', (req, res) => {
 app.get('/edit-profile', (req, res) => {
   res.render('profile/edit-profile', { title: 'Profile Page' });
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;

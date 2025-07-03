@@ -4,6 +4,7 @@ const adminAuth = require('../middleware/adminAuth');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const Profile = require('../models/Profile');
 
 router.get('/login', (req, res) => {
   res.render('user/login', { title: 'Admin Login' });
