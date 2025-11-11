@@ -4,6 +4,7 @@ import { Features } from "./Section/Fetaures";
 import { Profiles } from "./Section/Profile";
 import RecommendedSubjects from "./Section/RecommendedSubjects";
 import { ServicesSection } from "./Section/Services";
+import { Testimonials } from "./Section/Testimonial";
 
 export const Body = () => {
   return (
@@ -14,7 +15,7 @@ export const Body = () => {
       <ServicesSection/>
       <RecommendedSubjects/>
       <EducationalResources/>
-      
+      <Testimonials/>
     </div>
   )
 }

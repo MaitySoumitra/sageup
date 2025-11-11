@@ -1,9 +1,5 @@
-
-import MainImg from "../../../../assets/banner.jpg";
-import student1 from "../../../../assets/student1.jfif";
-import student2 from "../../../../assets/student2.jpg";
-import student3 from "../../../../assets/student3.webp";
-import student4 from "../../../../assets/student4.jfif";
+import { Player } from "@lottiefiles/react-lottie-player";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export const Banner = () => {
   return (
@@ -27,46 +23,18 @@ export const Banner = () => {
         </div>
       </div>
 
-      {/* Right Content */}
+      {/* Right Content (Lottie Animation) */}
       <div className="flex-1 flex justify-center items-center relative mt-10 lg:mt-0">
-        {/* Main Image */}
-        <img
-          src={MainImg}
-          alt="Main Student"
-          className="w-80 lg:w-96 rounded-xl shadow-lg relative z-10"
-        />
-
-        {/* Circle Images */}
-        <img
-          src={student1}
-          alt="Student"
-          className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover border-4 border-white shadow-lg absolute -top-2 left-32"
-        />
-        <img
-          src={student2}
-          alt="Student"
-          className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover border-4 border-white shadow-lg absolute -top-10 right-5"
-        />
-        <img
-          src={student3}
-          alt="Student"
-          className="w-32 h-40 lg:w-36 lg:h-48 rounded-2xl object-cover border-4 border-white shadow-lg absolute -bottom-2 left-20"
-        />
-        <img
-          src={student4}
-          alt="Student"
-          className="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover border-4 border-white shadow-lg absolute -bottom-10 right-5"
+        <DotLottieReact
+          autoplay
+          loop
+          src="https://lottie.host/e6dd9468-f110-4022-96ad-8896981e48be/pvRjOkmiJw.lottie"
+          style={{ height: "400px", width: "400px" }}
         />
 
         {/* Background Shapes */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute w-52 h-52 bg-[#002060] rounded-b-[60%] opacity-10 top-1/5 left-[70%]"></div>
-          <div className="absolute w-30 h-30 bg-[#1e90ff] rounded-b-[60%] opacity-10 top-3/5 left-[80%]"></div>
-          <div className="absolute w-24 h-24 bg-[#fdb813] rounded-b-[60%] opacity-10 bottom-10 left-[60%]"></div>
-        </div>
+        
       </div>
     </div>
   );
 };
-
-
