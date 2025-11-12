@@ -1,4 +1,4 @@
-import { Player } from "@lottiefiles/react-lottie-player";
+
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export const Banner = () => {
