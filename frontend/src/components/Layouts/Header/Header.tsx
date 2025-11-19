@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import LoginModal from '../../Modal/User/LoginModal';
+import Auth from '../../features/User/Auth';
 import MobileSearchHeader from './MobileSearchHeader';
 import {
   UserCircle,
@@ -205,7 +205,7 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
             </span>
           </div>
 
-          {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+          {showLogin && <Auth onClose={() => setShowLogin(false)} />}
         </div>
       </header>
 
