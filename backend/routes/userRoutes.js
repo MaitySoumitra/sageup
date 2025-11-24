@@ -1,153 +1,174 @@
-// routes/userRoutes.js
-// routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');  // For generating unique cookie IDs
+const { v4: uuidv4 } = require('uuid'); 
 
+// --- Helper Middleware (For Protected Routes) ---
+// You will need to export and use this in your routes
 
+const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000;
+const protect = async (req, res, next) => {
+    let token;
+    
+    // 1. Check for the unified authentication cookie
+    if (req.cookies.authToken) {
+        token = req.cookies.authToken; 
+    }
 
-// Register a new user
+    if (!token) {
+        return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    try {
+        // 2. Verify and decode the JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // 3. Attach user data (without password) to the request
+        req.user = await User.findById(decoded.id).select('-password'); 
+        
+        if (!req.user) {
+             return res.status(401).json({ message: 'User not found' });
+        }
+
+        next();
+    } catch (error) {
+        // If token is expired or invalid
+        console.error('Auth token error:', error);
+        return res.status(401).json({ message: 'Not authorized, token failed or expired' });
+    }
+};
+// --------------------------------------------------
+
+// ✅ Register a new user (Auto-Login implemented here)
 router.post('/register', async (req, res) => {
-  const { name, email, password, role, phone } = req.body;
+    const { name, email, password, role, phone } = req.body;
+    try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+        const newUser = new User({ name, email, password, role, phone });
+        await newUser.save();
+        
+        // 1. Generate JWT
+        const token = newUser.generateJWT(); 
+
+        // 2. Set long-lived cookie for persistent session
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            maxAge: MAX_AGE_MS, // 3 days
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+        });
+
+        // 3. Determine redirect path
+        let redirectTo = '/';
+        if (newUser.role === 'admin') {
+            redirectTo = '/admin/sageup-dashboard';
+        } else if (newUser.role === 'tutor' || newUser.role === 'institute') {
+            redirectTo = `/dashboard/${newUser._id}`;
+        } else if (newUser.role === 'student') {
+            redirectTo = '/';
+        }
+        
+
+        // 4. Send success and redirect instruction
+        res.status(201).json({
+            message: 'User registered successfully and logged in',
+            user: { id: newUser._id, name: newUser.name, role: newUser.role },
+            redirectTo // Crucial for the frontend navigation
+        });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-
-    const newUser = new User({
-      name,
-      email,
-      password,
-      role,
-      phone,
-      cookieId: uuidv4()  // assign a unique value
-    });
-
-    await newUser.save();
-    res.status(201).json({ message: 'User registered successfully', user: newUser });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
 });
 
-// User login
+// GET route for traditional server-side rendering (kept for context)
 router.get('/login', (req, res) => {
-  res.render('user/login', { title: 'Login' });
+    res.render('user/login', { title: 'Login' });
 });
 
+// ✅ User login (STATLESS: No DB updates)
 router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(403).json({ message: 'Email not found' });
+        const user = await User.findOne({ email });
+        
+        // Use 401 and generic message for security
+        if (!user) return res.status(401).json({ message: 'Invalid credentials' }); 
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(403).json({ message: 'Incorrect password' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const cookieId = uuidv4();
-    const token = user.generateJWT();
+        // 1. Generate the JWT (Stateless)
+        const token = user.generateJWT(); 
 
-    user.cookieId = cookieId;
-    user.jwtToken = token;
-    await user.save();
+        // 2. Define secure cookie options
+        const cookieOptions = {
+            httpOnly: true,
+            maxAge: 3 * 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+        };
+      
 
-    res.cookie('cookieId', cookieId, {
-      httpOnly: true,
-      maxAge: 259200000, // 3 days
-    });
+        // 3. Set the JWT as the primary authentication cookie
+        res.cookie('authToken', token, cookieOptions);
 
-    let redirectTo = '/';
-    if (user.role === 'admin') {
-      redirectTo = '/admin/sageup-dashboard';
-    } else if (user.role === 'tutor' || user.role === 'institute') {
-      redirectTo = `/dashboard/${user._id}`;
-    } else if (user.role === 'student') {
-      redirectTo = '/student/dashboard';
+        // **REMOVED: Database updates for cookieId and jwtToken**
+
+        let redirectTo = '/';
+        if (user.role === 'admin') {
+            redirectTo = '/admin/sageup-dashboard';
+        } else if (user.role === 'tutor' || user.role === 'institute') {
+            redirectTo = `/dashboard/${user._id}`;
+        } else if (user.role === 'student') {
+            redirectTo = '/student/dashboard';
+        }
+
+        res.status(200).json({
+            message: 'Login success',
+            user: { id: user._id, name: user.name, role: user.role },
+            redirectTo
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error' });
     }
-
-    res.status(200).json({
-      message: 'Login success',
-      user: { id: user._id, name: user.name, role: user.role },
-      redirectTo
-    });
-
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
 });
-// Get user profile
+
+// ✅ Logout (STATLESS: Simply clears the cookie)
 
 
-// routes/userRoutes.js (continue)
-router.post('/refresh-token', async (req, res) => {
-  const refreshToken = req.cookies.jwt;
 
-  if (!refreshToken) {
-    return res.status(401).json({ message: 'Authentication required' });
-  }
-
-  try {
-    // Verify the refresh token
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res.status(401).json({ message: 'User not found' });
-    }
-
-    // Generate new access token
-    const newAccessToken = user.generateJWT();
-
-    // Update JWT token in the database
-    user.jwtToken = newAccessToken;
-    await user.save();
-
-    // Set the new JWT token in cookies
-    res.cookie('jwt', newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 3 * 24 * 60 * 60 * 1000
-    });
-
-    res.json({ message: 'Token refreshed', token: newAccessToken });
-  } catch (error) {
-    console.error('Error refreshing token:', error);
-    res.status(500).json({ message: 'Failed to refresh token' });
-  }
+// ❌ Token Refresh Route (Removed as it was stateful and complex)
+// For a simple single-token approach, this is unnecessary.
+// If your security requirements change, you'd reintroduce it with a separate refresh token.
+router.post('/refresh-token', (req, res) => {
+    return res.status(404).json({ message: 'Token refresh route removed. Use the main authToken cookie for session persistence.' });
 });
-// routes/userRoutes.js
-router.post('/logout', async (req, res) => {
-  const cookieId = req.cookies.cookieId;
 
-  if (!cookieId) return res.status(400).json({ message: 'No active session' });
 
-  try {
-    const user = await User.findOne({ cookieId });
-    if (!user) return res.status(400).json({ message: 'Invalid session' });
+// Example Protected Route
+router.get('/profile', protect, (req, res) => {
+    // The user data is available at req.user, fetched via the middleware
+    res.json({ message: 'Profile data', user: req.user });
+});
 
-    // Clear the JWT from the user document
-    user.jwtToken = null;
-    user.cookieId = null;
-    await user.save();
-
-    // Clear the cookie
-    res.clearCookie('cookieId', { httpOnly: true, secure: true });
-
+router.post('/logout', (req, res) => {
+    // Clear the 3-day authentication cookie
+    res.clearCookie('authToken', { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'Strict' 
+    });
     res.status(200).json({ message: 'Logged out successfully' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error logging out' });
-  }
 });
-
 
 module.exports = router;
-

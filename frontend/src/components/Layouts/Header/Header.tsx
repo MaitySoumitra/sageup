@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Auth from '../../features/User/Auth';
 import MobileSearchHeader from './MobileSearchHeader';
+import { useAppSelector } from '../../app/hook'; // 🎯 NEW: Import Redux hook
 import {
   UserCircle,
   MagnifyingGlass,
@@ -27,13 +28,22 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isStickySearchHeader, setIsStickySearchHeader] = useState(false);
 
+  // 🎯 NEW: Access user state from Redux
+  const { user, isAuthenticated } = useAppSelector((state) => state.login);
+  
+  // Calculate display properties
+  const userInitial = isAuthenticated && user?.name ? user.name.charAt(0).toUpperCase() : null;
+  const userName = isAuthenticated && user?.name ? user.name.split(' ')[0] : null;
+
+
   const mobileSearchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      setIsStickySearchHeader(scrollY >= 400);
+      // Adjusted scroll threshold for mobile header stickiness
+      setIsStickySearchHeader(scrollY >= 100); 
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -103,8 +113,8 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
             <div className="flex items-center gap-8">
               <a href="/">
                 <img
-                  src="/kes-new.jpg"
-                  alt="Kisan E-Store"
+                  src="/header-logo.png"
+                  alt="vidyaru"
                   width={160}
                   height={40}
                   className="h-8 lg:h-10 w-auto object-contain"
@@ -149,15 +159,31 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
                 className="inline md:hidden text-gray-900 cursor-pointer"
               />
 
-              <button
-                className="flex items-center text-gray-900 hover:bg-blue-600 hover:text-white px-3 md:px-5 py-2 font-medium rounded-md"
-                onClick={() => setShowLogin(true)}
-              >
-                <UserCircle width={24} height={24} className="mr-2" />
-                Login
-              </button>
+              {/* 🎯 Updated User/Login Button Area */}
+              {isAuthenticated && userName ? (
+                // Display User Avatar/Initial and Name
+                <button
+                  className="flex items-center text-gray-900 px-3 md:px-5 py-2 font-medium rounded-md hover:bg-gray-100 transition"
+                  onClick={() => {/* Future: Implement profile dropdown or navigate to profile */}}
+                >
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold rounded-full mr-2 shadow-sm text-sm">
+                    {userInitial}
+                  </div>
+                  <span className="hidden md:inline">{userName}</span>
+                </button>
+              ) : (
+                // Display Login button if not authenticated
+                <button
+                  className="flex items-center text-gray-900 hover:bg-blue-600 hover:text-white px-3 md:px-5 py-2 font-medium rounded-md transition"
+                  onClick={() => setShowLogin(true)}
+                >
+                  <UserCircle width={24} height={24} className="mr-2" />
+                  Login
+                </button>
+              )}
 
-              {/* Cart Button */}
+
+              {/* Cart Button (Book a call) */}
               <button
                 onClick={() => window.location.href = '/cart'}
                 className="flex items-center text-gray-900 hover:bg-blue-600 hover:text-white px-3 md:px-5 py-2 font-medium rounded-md"

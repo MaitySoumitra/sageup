@@ -1,3 +1,5 @@
+// registerSlice.ts
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from 'axios'
@@ -6,9 +8,9 @@ interface UserProfile {
   _id?: string;
   name: string;
   email: string;
-  role: "admin" | "teacher" | "student";
+  role: "admin" | "tutor" | "student" | "institute"; // Added 'institute' for full role coverage
   phone?: string;
-  cookieId?: string;
+  // REMOVED: cookieId?: string; 
 }
 
 interface RegisterState {
@@ -16,16 +18,18 @@ interface RegisterState {
   loading: 'idle' | 'pending' | 'succeeded' | 'failed';
   error: string | null;
   successMessage: string | null;
+    redirectTo: string | null,
 }
 
 const initialState: RegisterState = {
   user: null,
   loading: 'idle',
   error: null,
-  successMessage: null
+  successMessage: null,
+  redirectTo: null
 };
 
-// Async thunk for registration
+// Async thunk for registration (No changes needed here as it handles API call)
 export const registerUser = createAsyncThunk<
   UserProfile, // return type
   { name: string; email: string; password: string; role: string; phone?: string }, // argument type
@@ -34,6 +38,7 @@ export const registerUser = createAsyncThunk<
   'auth/registerUser',
   async (userData, { rejectWithValue }) => {
     try {
+      // Backend now sends a cookie for auto-login
       const res = await axios.post("http://localhost:5000/api/users/register", userData);
       return res.data.user;
     } catch (err: any) {
@@ -63,6 +68,7 @@ const registerSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action: PayloadAction<UserProfile>) => {
         state.loading = 'succeeded';
         state.user = action.payload;
+        // The success message is the trigger for navigation
         state.successMessage = 'User registered successfully!';
       })
       .addCase(registerUser.rejected, (state, action) => {
