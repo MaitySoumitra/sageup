@@ -62,7 +62,8 @@ export const RegisterView = () => {
       return (
         <div className="relative">
           <select
-            className="border rounded-md px-4 py-4 w-full appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-black peer"
+            className="border border-[#1B9B7D] rounded-md px-4 py-4 w-full appearance-none bg-white outline-none focus:outline-none 
+             focus:border-[#1B9B7D] peer"
             {...registrationProps}
           >
             <option value="" disabled>Select Role</option>
@@ -76,13 +77,16 @@ export const RegisterView = () => {
 
     return (
       <div className="relative">
-        <input
-          id={name}
-          type={type}
-          placeholder=" "
-          className="peer w-full border rounded-md px-3 py-3 focus:ring-[#1B9B7D]"
-          {...registrationProps}
-        />
+       <input
+  id={name}
+  type={type}
+  placeholder=" "
+  className="peer w-full border-2 border-gray-300 rounded-md px-3 py-3 
+             outline-none focus:outline-none 
+             focus:border-[#1B9B7D]"
+  {...registrationProps}
+/>
+
 
         <label
           htmlFor={name}
@@ -92,7 +96,7 @@ peer-focus:left-2
 peer-focus:-translate-y-1/2
 peer-focus:text-xs
 peer-focus:text-[#1B9B7D]
-peer-focus:font-medium
+peer-focus:font-bold
 peer-not-placeholder-shown:top-0
 peer-not-placeholder-shown:-translate-y-1/2
 peer-not-placeholder-shown:text-xs "
