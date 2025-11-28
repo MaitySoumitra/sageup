@@ -11,7 +11,7 @@ import {
   Storefront,
   Headset,
   CaretRight,
-  DeviceMobile,
+  
   TrendUp,
 } from '@phosphor-icons/react';
 
@@ -153,11 +153,7 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
 
             {/* Right Side */}
             <div className="flex items-center justify-end gap-x-2 md:gap-x-4 relative">
-              <DeviceMobile
-                size={24}
-                weight="regular"
-                className="inline md:hidden text-gray-900 cursor-pointer"
-              />
+             
 
               {/* 🎯 Updated User/Login Button Area */}
               {isAuthenticated && userName ? (

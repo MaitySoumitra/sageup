@@ -12,7 +12,7 @@ interface RegisterForm {
   password: string;
   role: "admin" | "tutor" | "student" | "";
   phone?: string;
-  
+
 }
 
 export const RegisterView = () => {
@@ -26,7 +26,7 @@ export const RegisterView = () => {
       role: "",
     }
   });
-  
+
 
   // 🚀 CRITICAL FIX: Effect for redirection and state cleanup
   useEffect(() => {
@@ -77,15 +77,15 @@ export const RegisterView = () => {
 
     return (
       <div className="relative">
-       <input
-  id={name}
-  type={type}
-  placeholder=" "
-  className="peer w-full border-2 border-gray-300 rounded-md px-3 py-3 
+        <input
+          id={name}
+          type={type}
+          placeholder=" "
+          className="peer w-full border-2 border-gray-300 rounded-md px-3 py-3 
              outline-none focus:outline-none 
              focus:border-[#1B9B7D]"
-  {...registrationProps}
-/>
+          {...registrationProps}
+        />
 
 
         <label
