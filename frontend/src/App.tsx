@@ -1,21 +1,18 @@
 
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
-import { Body } from './components/Layouts/Body/Body'
-import Footer from './components/Layouts/Footer/Footer'
+import AdminApp from './components/admin/AdminApp'
+import { Home } from './components/home/Home'
 
-import Header from './components/Layouts/Header/Header'
 
 function App() {
  
 
   return (
-    <div className='min-h-screen bg-gray-100 font-sans-serif'>
-    <Header/>
-    <Body/>
-    
-    <Footer/>
-
-    </div>
+    <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/admin/*" element={<AdminApp/>}/>
+    </Routes>
   )
 }
 

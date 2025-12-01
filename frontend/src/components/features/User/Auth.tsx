@@ -44,35 +44,25 @@ const Auth: React.FC<AuthModalProps> = ({ onClose }) => {
           <X size={20} />
         </button>
         <div
-          className={`relative w-[800px] h-[500px] rounded-2xl shadow-2xl overflow-hidden 
- bg-gradient-to-br from-gray-200 to-white 
- transition-all duration-700
- ${isRegister ? "alt-active" : ""}`}
+          className={`relative max-w-7xl h-[500px] rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-br from-gray-200 to-white transition-all duration-700 ${isRegister ? "alt-active" : ""}`}
         >
           {/* LEFT — Login Form */}
           <div
-            className={`absolute top-0 left-0 h-full w-1/2 bg-white flex flex-col justify-center items-center
- transition-transform duration-700
- ${isRegister ? "translate-x-full" : "translate-x-0"}`}
+            className={`absolute top-0 left-0 h-full w-1/2 bg-white flex flex-col justify-center items-center transition-transform duration-700 ${isRegister ? "translate-x-full" : "translate-x-0"}`}
           >
             <LoginView />
           </div>
 
           {/* RIGHT — Register Form */}
           <div
-            className={`absolute top-0 right-0 h-full w-1/2 bg-white flex flex-col justify-center items-center
- transition-transform duration-700
-${isRegister ? "translate-x-0" : "translate-x-full"}`}
+            className={`absolute top-0 right-0 h-full w-1/2 bg-white flex flex-col justify-center items-center transition-transform duration-700 ${isRegister ? "translate-x-0" : "translate-x-full"}`}
           >
             <RegisterView />
           </div>
 
           {/* OVERLAY AREA */}
           <div
-            className={`absolute top-0 left-1/2 w-1/2 h-full flex flex-col justify-center items-center text-white 
- bg-gradient-to-br from-indigo-600 to-rose-600
- transition-transform duration-700 z-10
- ${isRegister ? "-translate-x-full" : "translate-x-0"}`}
+            className={`absolute top-0 left-1/2 w-1/2 h-full flex flex-col justify-center items-center text-white bg-gradient-to-br from-indigo-600 to-rose-600 transition-transform duration-700 z-10 ${isRegister ? "-translate-x-full" : "translate-x-0"}`}
           >
             <h1 className="text-3xl font-bold mb-4">
               {isRegister ? "Welcome Back!" : "Hello, New User!"}
