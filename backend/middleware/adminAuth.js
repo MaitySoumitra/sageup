@@ -3,14 +3,25 @@ const jwt = require('jsonwebtoken');
 
 const adminAuth = async (req, res, next) => {
   const cookieId = req.cookies.cookieId;
-  if (!cookieId) return res.redirect('/api/user/login'); // ✅ fix
+  
+  // Check if request is from API (React) or browser
+  const isApiRequest = req.originalUrl.startsWith('/vidyaru-dashboard') || req.originalUrl.startsWith('/pending-profiles');
+
+  if (!cookieId) {
+    if (isApiRequest) return res.status(401).json({ message: 'Not authenticated' });
+    return res.redirect('/admin/login'); // server-side page
+  }
 
   try {
     const user = await User.findOne({ cookieId });
-    if (!user || !user.jwtToken) return res.redirect('/api/user/login'); // ✅ fix
+    if (!user || !user.jwtToken) {
+      if (isApiRequest) return res.status(401).json({ message: 'Not authenticated' });
+      return res.redirect('/admin/login');
+    }
 
     const decoded = jwt.verify(user.jwtToken, process.env.JWT_SECRET);
     if (decoded.role !== 'admin') {
+      if (isApiRequest) return res.status(403).json({ message: 'Access denied. Admins only.' });
       return res.status(403).send('Access denied. Admins only.');
     }
 
@@ -18,9 +29,9 @@ const adminAuth = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    return res.redirect('/api/user/login');
+    if (isApiRequest) return res.status(401).json({ message: 'Not authenticated' });
+    return res.redirect('/admin/login');
   }
 };
 
 module.exports = adminAuth;
-

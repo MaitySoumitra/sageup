@@ -11,7 +11,7 @@ import {
   Storefront,
   Headset,
   CaretRight,
-  
+
   TrendUp,
 } from '@phosphor-icons/react';
 
@@ -27,10 +27,11 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
   const [trending, setTrending] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isStickySearchHeader, setIsStickySearchHeader] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   // 🎯 NEW: Access user state from Redux
   const { user, isAuthenticated } = useAppSelector((state) => state.login);
-  
+
   // Calculate display properties
   const userInitial = isAuthenticated && user?.name ? user.name.charAt(0).toUpperCase() : null;
   const userName = isAuthenticated && user?.name ? user.name.split(' ')[0] : null;
@@ -43,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
     const handleScroll = () => {
       const scrollY = window.scrollY;
       // Adjusted scroll threshold for mobile header stickiness
-      setIsStickySearchHeader(scrollY >= 100); 
+      setIsStickySearchHeader(scrollY >= 100);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -153,30 +154,65 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
 
             {/* Right Side */}
             <div className="flex items-center justify-end gap-x-2 md:gap-x-4 relative">
-             
+
 
               {/* 🎯 Updated User/Login Button Area */}
               {isAuthenticated && userName ? (
-                // Display User Avatar/Initial and Name
-                <button
-                  className="flex items-center text-gray-900 px-3 md:px-5 py-2 font-medium rounded-md hover:bg-gray-100 transition"
-                  onClick={() => {/* Future: Implement profile dropdown or navigate to profile */}}
-                >
-                  <div className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold rounded-full mr-2 shadow-sm text-sm">
-                    {userInitial}
-                  </div>
-                  <span className="hidden md:inline">{userName}</span>
-                </button>
-              ) : (
-                // Display Login button if not authenticated
-                <button
-                  className="flex items-center text-gray-900 hover:bg-blue-600 hover:text-white px-3 md:px-5 py-2 font-medium rounded-md transition"
-                  onClick={() => setShowLogin(true)}
-                >
-                  <UserCircle width={24} height={24} className="mr-2" />
-                  Login
-                </button>
-              )}
+  <div
+    className="relative"
+    onMouseEnter={() => setShowProfileDropdown(true)}
+    onMouseLeave={() => setShowProfileDropdown(false)}
+  >
+    <button className="flex items-center text-gray-900 px-3 md:px-5 py-2 font-medium rounded-md hover:bg-gray-100 transition">
+      <div className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white font-bold rounded-full mr-2 shadow-sm text-sm">
+        {userInitial}
+      </div>
+      <span className="hidden md:inline">{userName}</span>
+    </button>
+
+    {showProfileDropdown && (
+      <div className="absolute top-[30px] right-0 mt-2 w-44 bg-white border border-gray-200 shadow-lg rounded-lg py-2 z-50">
+        <button
+          onClick={() => {
+            if (!isAuthenticated || !user) return;
+            if (user.role === 'admin') window.location.href = '/admin/vidyaru-dashboard';
+            else if (user.role === 'tutor' || user.role === 'institute') window.location.href = `/dashboard/${user.name}`;
+            else if (user.role === 'student') window.location.href = '/student/dashboard';
+            setShowProfileDropdown(false);
+          }}
+          className="w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-50"
+        >
+          View Profile
+        </button>
+
+        <button
+          onClick={async () => {
+            try {
+              await fetch(`${import.meta.env.VITE_API_URL}/api/logout`, { method: 'POST', credentials: 'include' });
+              window.location.href = '/';
+            } catch (err) {
+              console.error('Logout failed', err);
+            }
+            setShowProfileDropdown(false);
+          }}
+          className="w-full text-left px-4 py-2 text-gray-800 hover:bg-blue-50"
+        >
+          Logout
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <button
+    className="flex items-center text-gray-900 hover:bg-blue-600 hover:text-white px-3 md:px-5 py-2 font-medium rounded-md transition"
+    onClick={() => setShowLogin(true)}
+  >
+    <UserCircle width={24} height={24} className="mr-2" />
+    Login
+  </button>
+)}
+
+
 
 
               {/* Cart Button (Book a call) */}

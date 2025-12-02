@@ -4,8 +4,7 @@ const User = require('../models/User');
 const Profile = require('../models/Profile');
 const authenticate = require('../middleware/teacherAuth');
 const Subject = require('../models/Subject');
-const Library = require('../models/Libraries'); // ✅ Add this at the top if not present
-
+const Library = require('../models/Libraries');
 
 // Helper: Valid tab views
 const validPages = ['home', 'course', 'libraries', 'review'];
@@ -17,33 +16,31 @@ router.get('/dashboard/:userId', authenticate, async (req, res) => {
   const userId = req.params.userId;
   const loggedInUserId = req.user.id;
 
-  // Check if authenticated user matches the route userId
   if (userId !== String(loggedInUserId)) {
-    return res.status(403).send('Unauthorized access');
+    return res.status(403).json({ message: 'Unauthorized access' });
   }
 
   const user = await User.findById(userId);
   if (!user || !['tutor', 'institute'].includes(user.role)) {
-    return res.status(403).send('Invalid user or role');
+    return res.status(403).json({ message: 'Invalid user or role' });
   }
 
-  // Redirect to home tab
-  return res.redirect(`/dashboard/${userId}/home`);
+  return res.json({ message: 'Redirect to /dashboard/' + userId + '/home' });
 });
 
 /**
- * Tab-specific dashboard page (home, course, libraries, review)
+ * Tab-specific dashboard data
  */
 router.get('/dashboard/:userId/:section', authenticate, async (req, res) => {
   const { userId, section } = req.params;
   const loggedInUserId = req.user.id;
 
   if (userId !== String(loggedInUserId)) {
-    return res.status(403).send('Unauthorized access');
+    return res.status(403).json({ message: 'Unauthorized access' });
   }
 
   if (!validPages.includes(section)) {
-    return res.status(404).send('Page not found');
+    return res.status(404).json({ message: 'Page not found' });
   }
 
   const user = await User.findById(userId);
@@ -51,34 +48,29 @@ router.get('/dashboard/:userId/:section', authenticate, async (req, res) => {
   const subjects = await Subject.find({ user: userId });
 
   if (!user || !['tutor', 'institute'].includes(user.role)) {
-    return res.status(403).send('Invalid user or role');
+    return res.status(403).json({ message: 'Invalid user or role' });
   }
 
-  // 🔍 Fetch libraries only if the tab is "libraries"
   let libraries = [];
   if (section === 'libraries') {
     libraries = await Library.find({ uploadedBy: userId }).populate('uploadedBy', 'name');
   }
 
-  res.render('teacher-institute/teacher-institute-dashboard', {
-    title: `${user.name}'s Dashboard`,
+  res.json({
     user,
     subjects,
-    editMode: false,
     profile,
-    page: section,
-    libraries // ✅ Pass to EJS
+    section,
+    libraries
   });
 });
-
-
 
 // ----------------------------
 // Profile API Routes
 // ----------------------------
 
 /**
- * Create profile (POST)
+ * Create profile
  */
 router.post('/api/profiles', authenticate, async (req, res) => {
   try {
@@ -104,7 +96,7 @@ router.post('/api/profiles', authenticate, async (req, res) => {
 });
 
 /**
- * Update profile (PUT)
+ * Update profile
  */
 router.put('/api/profiles', authenticate, async (req, res) => {
   try {
@@ -129,7 +121,7 @@ router.put('/api/profiles', authenticate, async (req, res) => {
 });
 
 /**
- * Get current user's profile (GET)
+ * Get current user's profile
  */
 router.get('/api/profiles/me', authenticate, async (req, res) => {
   try {
@@ -145,6 +137,9 @@ router.get('/api/profiles/me', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * Get best teachers
+ */
 router.get('/api/best-teachers', async (req, res) => {
   try {
     const levels = ['beginner', 'intermediate', 'advanced'];
@@ -157,12 +152,11 @@ router.get('/api/best-teachers', async (req, res) => {
       levelGroups[level] = profiles;
     }
 
-    res.json(levelGroups); // { beginner: [...], intermediate: [...], advanced: [...] }
+    res.json(levelGroups);
   } catch (err) {
     console.error('Error fetching best teachers:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 module.exports = router;

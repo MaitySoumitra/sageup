@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid'); 
+
 
 // --- Helper Middleware (For Protected Routes) ---
 // You will need to export and use this in your routes
