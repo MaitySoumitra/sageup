@@ -30,7 +30,14 @@ const isActive = (page: string) => {
   return (
     <aside className="w-60 bg-white p-6 shadow-xl h-screen sticky top-0">
       <div className="flex flex-col items-center mb-8">
-        <div className="text-3xl font-extrabold text-blue-600">EduHub</div>
+       <div>
+  <img 
+    src="/header-logo.png"  // Replace with your image path
+    alt="Vidyaru" 
+    className="h-12 w-auto"       // Adjust height/width as needed
+  />
+</div>
+
       </div>
 
       <nav>

@@ -141,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({ className = '', hideMobileSearch }) => 
                 <input
                   ref={inputRef}
                   type="text"
-                  placeholder="Search for Products, Brands and More"
+                  placeholder="Search for Instution, Subjects, Notes and More"
                   value={searchQuery}
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
