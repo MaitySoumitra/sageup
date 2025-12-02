@@ -81,7 +81,7 @@ function AdminApp() {
             {/* Redirect /admin root or any invalid admin routes to /auth if not logged in */}
             {!isAuthenticated && (
                 <Route path="/*" element={<Navigate to="/admin/auth" replace />} />
-            )}~
+            )}
         </Routes>
     );
 }
