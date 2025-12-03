@@ -6,10 +6,6 @@ const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const Profile = require('../models/Profile');
 
-router.get('/login', (req, res) => {
-  res.render('user/login', { title: 'Admin Login' });
-});
-
 
 
 router.get('/vidyaru-dashboard', adminAuth, async (req, res) => {
@@ -32,7 +28,6 @@ router.get('/vidyaru-dashboard', adminAuth, async (req, res) => {
   }
 });
 
-
 router.get('/pending-profiles', adminAuth, async (req, res) => {
   try {
     const profiles = await Profile.find({ status: 'under_review' })
@@ -53,7 +48,18 @@ router.get('/pending-profiles', adminAuth, async (req, res) => {
   }
 });
 
+// GET /admin/all-profiles
+router.get('/all-profiles', adminAuth, async (req, res) => {
+  try {
+    const profiles = await Profile.find({})
+      .populate('user', 'name email');
 
+    res.json({ profiles });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching profiles' });
+  }
+});
 
 
 // ✅ Admin updates profile status

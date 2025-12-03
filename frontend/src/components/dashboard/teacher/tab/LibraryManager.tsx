@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import { UploadSimple, DownloadSimple } from '@phosphor-icons/react';
 // Interfaces imported from useSampleData.ts (simplified here)
-interface LibraryItem {
-  _id: string;
-  title: string;
-  description: string;
-  type: 'question' | 'solution' | 'note';
-  category?: string;
-  fileUrl: string;
-  uploadedBy?: { name: string };
-}
-interface User { name: string; }
+import type { User, LibraryItem } from '../profile';
 
 interface LibraryManagerProps {
   user: User;

@@ -33,7 +33,7 @@ const PendingProfiles: React.FC<PendingProfilesProps> = ({ initialProfiles = [] 
   const updateStatus = async (id: string, status: 'approved' | 'rejected') => {
     try {
       await axiosClient.post(
-        '/admin/profile/${id}/status',
+        `/admin/profile/${id}/status`,
         { status },
         { withCredentials: true }
       );

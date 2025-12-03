@@ -9,7 +9,7 @@ interface AdminSidebarProps {
 const navItems = [
   { name: 'Home', tab: 'home', Icon: House },
   { name: 'Pending Profiles', tab: 'pending-profiles', Icon: NotePencil },
-  { name: 'Approved Profiles', tab: 'approved', Icon: Files },
+  { name: 'All', tab: 'all', Icon: Files },
 ];
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) => {

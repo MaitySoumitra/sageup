@@ -10,7 +10,7 @@ interface DashboardContentProps {
 }
 
 const AdminProfile: React.FC<DashboardContentProps> = ({
-  pendingProfiles = [],
+ 
   pendingCount,
   approvedCount,
   rejectedCount,

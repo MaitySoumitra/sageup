@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import Sidebar from './tab/Sidebar';
 import TutorProfile from './tab/TutorProfile';
-import axios from 'axios';
-import { useLocation, useParams } from 'react-router-dom';
+import SubjectManager from './tab/SubjectManager';
+import LibraryManager from './tab/LibraryManager';
+import axiosClient from '../../api/axiosClient';
+import type { Subject, LibraryItem, User } from './profile';
 
 const TeacherDashboard: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
-  const location = useLocation();
   const [profile, setProfile] = useState<any>(null);
-  const [user, setUser] = useState<any>({ name: '' });
+  const [user, setUser] = useState<User>({ name: '' });
   const [loading, setLoading] = useState(true);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [libraries, setLibraries] = useState<LibraryItem[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/profiles/me`,  {
-            withCredentials: true // ✅ send cookies along with request
-          });
+        const res = await axiosClient.get('/api/profiles/me', { withCredentials: true });
         setProfile(res.data.profile);
         setUser(res.data.profile?.user || { name: 'Teacher' });
       } catch (err) {
@@ -25,22 +27,28 @@ const TeacherDashboard: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, []);
+
+  
 
   if (loading) return <p>Loading...</p>;
 
   return (
     <div className="flex">
-      <Sidebar currentPath={location.pathname} userId={userId!} profileStatus={profile?.status} />
+      <Sidebar currentPath={window.location.pathname} userId={userId!} profileStatus={profile?.status} />
 
       <main className="flex-1 p-8">
         {profile?.status !== 'approved' ? (
           <TutorProfile user={user} profile={profile} />
         ) : (
-          <p>✅ Your profile is approved! You can now access other tabs.</p>
-          // Here you can render other components like SubjectManager, LibraryManager, etc.
+          <Routes>
+           <Route path="" element={<SubjectManager user={user} subjects={subjects} />} />
+            <Route path="libraries" element={<LibraryManager user={user} libraries={libraries} />} />
+            <Route path="review" element={<p>Review tab content</p>} />
+            <Route path="application" element={<p>Application tab content</p>} />
+            <Route path="*" element={<p>Page not found</p>} />
+          </Routes>
         )}
       </main>
     </div>

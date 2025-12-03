@@ -4,6 +4,7 @@ import AdminSidebar from './tab/Sidebar';
 import AdminProfile from './tab/AdminProfile';
 import PendingProfiles from './tab/PendingProfiles';
 import axiosClient from '../../api/axiosClient';
+import AllProfiles from './tab/AllProfiles';
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("home");
@@ -24,8 +25,8 @@ const AdminDashboard: React.FC = () => {
         return <AdminProfile {...dashboardData} />;
       case "pending-profiles":
         return <PendingProfiles />;
-      case "approved":
-        return <div>Approved Profiles Coming Soon</div>;
+      case "all":
+        return <AllProfiles/>;
       default:
         return null;
     }
