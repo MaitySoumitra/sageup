@@ -2,34 +2,52 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const adminAuth = async (req, res, next) => {
-  const cookieId = req.cookies.cookieId;
-  
-  // Check if request is from API (React) or browser
-  const isApiRequest = req.originalUrl.startsWith('/vidyaru-dashboard') || req.originalUrl.startsWith('/pending-profiles');
+  // Admin must use SAME TOKEN SYSTEM as userAuth
+  const token = req.cookies.authToken;
 
-  if (!cookieId) {
-    if (isApiRequest) return res.status(401).json({ message: 'Not authenticated' });
-    return res.redirect('/admin/login'); // server-side page
+  // Detect if request is from frontend API
+  const isApiRequest =
+    req.originalUrl.startsWith('/admin/') ||  
+    req.originalUrl.includes('vidyaru-dashboard') ||
+    req.originalUrl.includes('pending-profiles');
+
+  // No token?
+  if (!token) {
+    if (isApiRequest)
+      return res.status(401).json({ message: 'Not authenticated' });
+
+    return res.redirect('/admin/login');
   }
 
   try {
-    const user = await User.findOne({ cookieId });
-    if (!user || !user.jwtToken) {
-      if (isApiRequest) return res.status(401).json({ message: 'Not authenticated' });
-      return res.redirect('/admin/login');
-    }
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const decoded = jwt.verify(user.jwtToken, process.env.JWT_SECRET);
+    // Must be admin
     if (decoded.role !== 'admin') {
-      if (isApiRequest) return res.status(403).json({ message: 'Access denied. Admins only.' });
+      if (isApiRequest)
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+
       return res.status(403).send('Access denied. Admins only.');
     }
 
-    req.user = decoded;
+    // Attach admin user to request
+    req.user = await User.findById(decoded.id).select('-password');
+
+    if (!req.user) {
+      if (isApiRequest)
+        return res.status(401).json({ message: 'Admin not found' });
+
+      return res.redirect('/admin/login');
+    }
+
     next();
   } catch (err) {
-    console.error(err);
-    if (isApiRequest) return res.status(401).json({ message: 'Not authenticated' });
+    console.error('Admin token error:', err);
+
+    if (isApiRequest)
+      return res.status(401).json({ message: 'Invalid or expired token' });
+
     return res.redirect('/admin/login');
   }
 };

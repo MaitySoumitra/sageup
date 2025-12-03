@@ -3,7 +3,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import AdminSidebar from './tab/Sidebar';
 import AdminProfile from './tab/AdminProfile';
 import PendingProfiles from './tab/PendingProfiles';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("home");
@@ -12,7 +12,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/vidyaru-dashboard`, { withCredentials: true });
+      const res = await axiosClient.get('/admin/vidyaru-dashboard', { withCredentials: true });
       setDashboardData(res.data);
     };
     fetchData();

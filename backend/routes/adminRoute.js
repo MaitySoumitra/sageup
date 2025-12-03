@@ -35,16 +35,25 @@ router.get('/vidyaru-dashboard', adminAuth, async (req, res) => {
 
 router.get('/pending-profiles', adminAuth, async (req, res) => {
   try {
-    const profiles = await Profile.find({ status: 'under_review' }).populate('user', 'name email');
+    const profiles = await Profile.find({ status: 'under_review' })
+      .populate('user', 'name email');
     const approvedCount = await Profile.countDocuments({ status: 'approved' });
     const rejectedCount = await Profile.countDocuments({ status: 'rejected' });
 
-    // Send JSON for React frontend
-    res.json({ profiles, approvedCount, rejectedCount });
+    res.json({
+      profiles,
+      approvedCount,
+      rejectedCount,
+      pendingCount: profiles.length
+    });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error fetching profiles' });
   }
 });
+
+
 
 
 // ✅ Admin updates profile status

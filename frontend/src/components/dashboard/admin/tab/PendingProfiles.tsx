@@ -1,6 +1,6 @@
 // src/components/dashboard/admin/tab/PendingProfiles.tsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosClient from '../../../api/axiosClient';
 import type { Profile } from '../profile';
 
 interface PendingProfilesProps {
@@ -14,7 +14,7 @@ const PendingProfiles: React.FC<PendingProfilesProps> = ({ initialProfiles = [] 
 
   const fetchProfiles = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/pending-profiles`, {
+      const res = await axiosClient.get('/admin/pending-profiles', {
         withCredentials: true,
       });
       setProfiles(res.data.profiles ?? []);
@@ -32,8 +32,8 @@ const PendingProfiles: React.FC<PendingProfilesProps> = ({ initialProfiles = [] 
 
   const updateStatus = async (id: string, status: 'approved' | 'rejected') => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/admin/profile/${id}/status`,
+      await axiosClient.post(
+        '/admin/profile/${id}/status',
         { status },
         { withCredentials: true }
       );

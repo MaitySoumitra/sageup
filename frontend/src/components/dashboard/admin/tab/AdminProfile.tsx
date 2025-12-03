@@ -38,37 +38,8 @@ const AdminProfile: React.FC<DashboardContentProps> = ({
         </div>
       </div>
 
-      {/* Pending Profiles List */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-700 flex justify-between items-center">
-          Recent Pending Profiles ({(pendingProfiles ?? []).length})
-          <a
-            href="/admin/vidyaru-dashboard/pending-profiles"
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-          >
-            View All &rarr;
-          </a>
-        </h2>
-
-        <ul className="divide-y divide-gray-100">
-          {(pendingProfiles ?? []).slice(0, 5).map(profile => (
-            <li key={profile._id} className="py-3 flex justify-between items-center">
-              <div>
-                <p className="font-medium text-gray-800">{profile.user.name}</p>
-                <p className="text-sm text-gray-500">{profile.user.email}</p>
-              </div>
-              <span className="text-xs font-medium text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">
-                Under Review
-              </span>
-            </li>
-          ))}
-          {(pendingProfiles ?? []).length === 0 && (
-            <li className="py-3 text-center text-gray-500 italic">
-              No profiles currently pending review.
-            </li>
-          )}
-        </ul>
-      </div>
+      
+     
     </div>
   );
 };
