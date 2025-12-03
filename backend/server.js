@@ -41,7 +41,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/profiles', require('./routes/profileRoute'));
 app.use('/api/contacts',    require('./routes/contactRoute'));
 app.use('/admin', require('./routes/adminRoute'));
-app.use('/', require('./routes/teacherRoute'));
+// app.use('/', require('./routes/teacherRoute'));
 app.use('/api/subjects', require('./routes/subjectRoute'));
 app.use('/api/libraries', require('./routes/librariesRoute'));
 

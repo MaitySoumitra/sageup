@@ -1,27 +1,39 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/User'); // Required only for role enforcement if necessary
 
 module.exports = async (req, res, next) => {
-  const cookieId = req.cookies.cookieId;
-  if (!cookieId) return res.status(401).send('Not logged in');
-
-  const user = await User.findOne({ cookieId });
-  if (!user || !user.jwtToken) return res.status(403).send('Invalid session');
-
-  try {
-    const decoded = jwt.verify(user.jwtToken, process.env.JWT_SECRET);
-    if (decoded.id !== user._id.toString()) {
-      return res.status(403).send('Invalid token');
+    // 1. Get the Token from Cookies
+    const authToken = req.cookies.authToken; // Assuming the cookie name is 'authToken'
+    
+    if (!authToken) {
+        // This causes the 401 Unauthorized if the cookie is missing.
+        return res.status(401).send('Authentication required: Token missing.'); 
     }
 
-    if (!['tutor', 'institute'].includes(user.role)) {
-      return res.status(403).send('Unauthorized role');
-    }
+    try {
+        // 2. Verify the Token (Stateless Check)
+        // This verifies the signature and checks for expiration in one step.
+        const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
 
-    req.user = { id: user._id.toString(), role: user.role, name: user.name }; // force id to string
-    next();
-  } catch (err) {
-    console.error('Auth error:', err);
-    return res.status(403).send('Authentication failed');
-  }
+        // The token is valid and contains { id, role }
+        
+        // 3. Authorization Check (Role Enforcement)
+        if (!['tutor', 'institute'].includes(decoded.role)) {
+            // This causes the 403 Forbidden if the role is wrong.
+            return res.status(403).send('Unauthorized role: Access restricted to tutors/institutes.');
+        }
+
+        // 4. Attach user data to request
+        // We can trust the data in the token payload (id and role) as it's signed.
+        req.user = { id: decoded.id, role: decoded.role, name: decoded.name || 'Teacher' }; // Optionally include name if you add it to the token payload later.
+        
+        // Optional: If you need other user details like email/phone often, 
+        // you might query the DB here: const user = await User.findById(decoded.id).select('name email');
+        
+        next();
+    } catch (err) {
+        console.error('JWT Authentication failed:', err.message);
+        // Returns 401 for 'JsonWebTokenError' (invalid signature) or 'TokenExpiredError'
+        return res.status(401).send('Authentication failed: Invalid or expired token.');
+    }
 };

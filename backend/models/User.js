@@ -7,6 +7,10 @@ const userSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile"
+  },
     // NOTE: If you need 'institute' or 'admin', keep them, but ensure client-side roles match.
     role: { type: String, enum: ['admin', 'student', 'tutor', 'institute'], required: true },
     phone: String,

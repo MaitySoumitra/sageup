@@ -50,15 +50,34 @@ router.post('/', userAuth, async (req, res) => {
 
 // ✅ Get current user's profile
 router.get('/me', userAuth, async (req, res) => {
+ 
+
   try {
+    // Log what comes from middleware
+   
+
+    // Find profile
     const profile = await Profile.findOne({ user: req.user.id }).populate('user', 'name email role');
-    if (!profile) return res.status(404).json({ message: 'No profile found' });
-    res.json({ profile });
+    
+    // Log query result
+   
+
+    if (!profile) {
+     
+      return res.status(404).json({ message: 'No profile found for this user' });
+    }
+
+ 
+    res.status(200).json({ profile });
+
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching profile:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+
 
 // ✅ Update profile
 router.put('/me', userAuth, async (req, res) => {

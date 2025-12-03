@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Profile=require('../models/Profile')
 
 
 // --- Helper Middleware (For Protected Routes) ---
@@ -43,48 +44,50 @@ const protect = async (req, res, next) => {
 
 // ✅ Register a new user (Auto-Login implemented here)
 router.post('/register', async (req, res) => {
-    const { name, email, password, role, phone } = req.body;
-    try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-
-        const newUser = new User({ name, email, password, role, phone });
-        await newUser.save();
-        
-        // 1. Generate JWT
-        const token = newUser.generateJWT(); 
-
-        // 2. Set long-lived cookie for persistent session
-        res.cookie('authToken', token, {
-            httpOnly: true,
-            maxAge: MAX_AGE_MS, // 3 days
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict',
-        });
-
-        // 3. Determine redirect path
-        let redirectTo = '/';
-        if (newUser.role === 'admin') {
-            redirectTo = '/admin/sageup-dashboard';
-        } else if (newUser.role === 'tutor' || newUser.role === 'institute') {
-            redirectTo = `/dashboard/${newUser._id}`;
-        } else if (newUser.role === 'student') {
-            redirectTo = '/';
-        }
-        
-
-        // 4. Send success and redirect instruction
-        res.status(201).json({
-            message: 'User registered successfully and logged in',
-            user: { id: newUser._id, name: newUser.name, role: newUser.role },
-            redirectTo // Crucial for the frontend navigation
-        });
-    } catch (error) {
-        console.error('Error registering user:', error);
-        res.status(500).json({ message: 'Internal server error' });
+  const { name, email, password, role, phone } = req.body;
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
     }
+
+    const newUser = new User({ name, email, password, role, phone });
+    await newUser.save();
+
+    // --- Create profile if tutor ---
+    let profile = null;
+    if (role === 'tutor') {
+      profile = new Profile({
+        user: newUser._id,
+        type: 'private_tutor',  // default type, can be updated later
+        contactInfo: { phone, email }
+      });
+      await profile.save();
+
+      // Link profile to user
+      newUser.profile = profile._id;
+      await newUser.save();
+    }
+
+    const token = newUser.generateJWT();
+
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+    });
+
+    res.status(201).json({
+      message: 'User registered successfully and logged in',
+      user: { id: newUser._id, name: newUser.name, role: newUser.role, profile: profile?._id || null },
+      redirectTo: role === 'tutor' ? `/dashboard/${newUser._id}` : '/'
+    });
+
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 // GET route for traditional server-side rendering (kept for context)
