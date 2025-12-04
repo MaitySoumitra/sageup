@@ -4,6 +4,7 @@ import Sidebar from './tab/Sidebar';
 import TutorProfile from './tab/TutorProfile';
 import SubjectManager from './tab/SubjectManager';
 import LibraryManager from './tab/LibraryManager';
+import IndexManager from './tab/IndexManager'
 import axiosClient from '../../api/axiosClient';
 import type { Subject, LibraryItem, User } from './profile';
 
@@ -38,12 +39,13 @@ const TeacherDashboard: React.FC = () => {
     <div className="flex">
       <Sidebar currentPath={window.location.pathname} userId={userId!} profileStatus={profile?.status} />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1">
         {profile?.status !== 'approved' ? (
           <TutorProfile user={user} profile={profile} />
         ) : (
           <Routes>
-           <Route path="" element={<SubjectManager user={user} subjects={subjects} />} />
+            <Route path='' element={<IndexManager/>} />
+           <Route path="course" element={<SubjectManager user={user} subjects={subjects} />} />
             <Route path="libraries" element={<LibraryManager user={user} libraries={libraries} />} />
             <Route path="review" element={<p>Review tab content</p>} />
             <Route path="application" element={<p>Application tab content</p>} />

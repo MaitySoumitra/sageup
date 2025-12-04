@@ -51,4 +51,15 @@ router.get('/download/:filename', (req, res) => {
   res.download(filePath);
 });
 
+// 📌 GET libraries uploaded by logged-in user
+router.get('/my', userAuth, async (req, res) => {
+  try {
+    const items = await Libraries.find({ uploadedBy: req.user.id });
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 module.exports = router;
