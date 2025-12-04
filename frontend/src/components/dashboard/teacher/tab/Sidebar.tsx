@@ -2,6 +2,10 @@ import { House, Books, Buildings, Files, NotePencil, SignOut } from '@phosphor-i
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+// --- CONSTANTS ---
+const PRIMARY_ACCENT = '#014063'; // Dark Navy (For inactive icons/text)
+const ACTIVE_COLOR = '#1A9A7D'; // Teal Green (For active state background/text)
+
 interface SidebarProps {
   currentPath: string;
   userId: string;
@@ -20,8 +24,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, userId, profileStatus })
   const basePath = `/dashboard/${userId}`;
 
   const isActive = (page: string) => {
+    // Adjusted logic to correctly check if the current path *starts* with the non-home paths, 
+    // and ends with basePath for 'home'.
     const route = page === 'home' ? basePath : `${basePath}/${page}`;
-    return currentPath.endsWith(route);
+
+    // Check for exact match for home, and startsWith for other pages to catch sub-routes
+    if (page === 'home') {
+      return currentPath.endsWith(basePath) && currentPath.split('/').length === basePath.split('/').length;
+    }
+    return currentPath.startsWith(route);
   };
 
   // Only show full nav if profile is approved
@@ -30,7 +41,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, userId, profileStatus })
   return (
     <aside className="w-60 bg-white p-6 shadow-xl h-screen sticky top-0">
       <div className="flex flex-col items-center mb-8">
-        <img src="/header-logo.png" alt="Logo" className="h-12 w-auto" />
+        {/* Logo styling adjusted for better visibility against white background */}
+        <img
+          src="/header-logo.png"
+          alt="Logo"
+          className="h-12 w-auto"
+        />
       </div>
 
       <nav>
@@ -42,9 +58,14 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, userId, profileStatus })
             <Link
               key={page}
               to={path}
-              className={`flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 ${
-                active ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 ${active
+                  ? 'font-bold'
+                  : 'hover:bg-gray-50'
+                }`}
+              style={{
+                color: active ? ACTIVE_COLOR : PRIMARY_ACCENT,
+                backgroundColor: active ? '#1a9a7d1a' : 'transparent', // Light tint of ACTIVE_COLOR for background
+              }}
             >
               <Icon size={20} weight={active ? 'fill' : 'regular'} />
               {name}
@@ -54,7 +75,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, userId, profileStatus })
 
         <a
           href="/api/users/logout"
-          className="flex items-center gap-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 mt-6"
+          className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 mt-6"
+          style={{ color: PRIMARY_ACCENT }}
         >
           <SignOut size={20} />
           Logout

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import axiosClient from "../../../api/axiosClient";
 // --- Updated Icons from @phosphor-icons/react ---
 import { 
-    User, 
+   
     Star, 
     Clock, 
     BookOpen, 

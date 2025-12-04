@@ -11,7 +11,7 @@ import type { Subject, LibraryItem, User } from './profile';
 const TeacherDashboard: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<any>(null);
-  const [user, setUser] = useState<User>({ name: '' });
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [libraries, setLibraries] = useState<LibraryItem[]>([]);
@@ -31,27 +31,30 @@ const TeacherDashboard: React.FC = () => {
     fetchProfile();
   }, []);
 
-  
+
 
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="flex">
+    <div className="flex max-w-8xl mx-auto">
       <Sidebar currentPath={window.location.pathname} userId={userId!} profileStatus={profile?.status} />
 
       <main className="flex-1">
         {profile?.status !== 'approved' ? (
-          <TutorProfile user={user} profile={profile} />
+          user ? <TutorProfile user={user} profile={profile} /> : <p>Loading user...</p>
         ) : (
-          <Routes>
-            <Route path='' element={<IndexManager/>} />
-           <Route path="course" element={<SubjectManager user={user} subjects={subjects} />} />
-            <Route path="libraries" element={<LibraryManager user={user} libraries={libraries} />} />
-            <Route path="review" element={<p>Review tab content</p>} />
-            <Route path="application" element={<p>Application tab content</p>} />
-            <Route path="*" element={<p>Page not found</p>} />
-          </Routes>
+          user && (
+            <Routes>
+              <Route path='' element={<IndexManager />} />
+              <Route path="course" element={<SubjectManager user={user} subjects={subjects} />} />
+              <Route path="libraries" element={<LibraryManager />} />
+              <Route path="review" element={<p>Review tab content</p>} />
+              <Route path="application" element={<p>Application tab content</p>} />
+              <Route path="*" element={<p>Page not found</p>} />
+            </Routes>
+          )
         )}
+
       </main>
     </div>
   );

@@ -17,11 +17,14 @@ export interface LibraryItem {
   title: string;
   description: string;
   type: 'question' | 'solution' | 'note';
-  category?: string;
+  category: string;
   fileUrl: string;
-  uploadedBy?: { name: string };
+  uploadedBy: { _id: string, name: string } | User;
+  createdAt: string;
 }
 
 export interface User {
+  _id: string;
   name: string;
+  email: string;
 }
