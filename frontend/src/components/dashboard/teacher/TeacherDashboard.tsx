@@ -6,7 +6,7 @@ import SubjectManager from './tab/SubjectManager';
 import LibraryManager from './tab/LibraryManager';
 import IndexManager from './tab/IndexManager'
 import axiosClient from '../../api/axiosClient';
-import type { Subject, LibraryItem, User } from './profile';
+import type { Subject,  User } from './profile';
 
 const TeacherDashboard: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -14,7 +14,6 @@ const TeacherDashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [libraries, setLibraries] = useState<LibraryItem[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {

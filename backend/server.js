@@ -44,7 +44,7 @@ app.use('/admin', require('./routes/adminRoute'));
 // app.use('/', require('./routes/teacherRoute'));
 app.use('/api/subjects', require('./routes/subjectRoute'));
 app.use('/api/libraries', require('./routes/librariesRoute'));
-
+app.use ('/api/reviews', require('./routes/reviewRoute'))
 
 // Default route
 app.get('/', (req, res) => {
