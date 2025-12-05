@@ -2,7 +2,7 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import axios from 'axios'
+import axiosClient from "../../../api/axiosClient";
 
 interface UserProfile {
   _id?: string;
@@ -39,7 +39,7 @@ export const registerUser = createAsyncThunk<
   async (userData, { rejectWithValue }) => {
     try {
       // Backend now sends a cookie for auto-login
-      const res = await axios.post("http://localhost:5000/api/users/register", userData);
+      const res = await axiosClient.post("http://localhost:5000/api/users/register", userData);
       return res.data.user;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Registration failed');

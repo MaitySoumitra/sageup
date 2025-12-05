@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosClient from "../../../api/axiosClient";
 
 // --- INTERFACES ---
 
@@ -45,8 +45,8 @@ export const loginUsers = createAsyncThunk<
   "auth/loginUsers",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/users/login",
+      const res = await axiosClient.post(
+        "/api/users/login",
         { email, password },
         { withCredentials: true } // HttpOnly cookie
       );
