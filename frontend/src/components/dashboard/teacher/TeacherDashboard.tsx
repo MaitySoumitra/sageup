@@ -7,6 +7,7 @@ import LibraryManager from './tab/LibraryManager';
 import IndexManager from './tab/IndexManager'
 import axiosClient from '../../api/axiosClient';
 import type { Subject,  User } from './profile';
+import ReviewManager from './tab/ReviewManager';
 
 const TeacherDashboard: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -41,7 +42,6 @@ const TeacherDashboard: React.FC = () => {
   return (
     <div className="flex max-w-8xl mx-auto">
       <Sidebar currentPath={window.location.pathname} userId={userId!} profileStatus={profile?.status} />
-
       <main className="flex-1">
         {profile?.status !== 'approved' ? (
           user ? <TutorProfile user={user} profile={profile} /> : <p>Loading user...</p>
@@ -51,13 +51,12 @@ const TeacherDashboard: React.FC = () => {
               <Route path='' element={<IndexManager />} />
               <Route path="course" element={<SubjectManager user={user} subjects={subjects} />} />
               <Route path="libraries" element={<LibraryManager />} />
-              <Route path="review" element={<p>Review tab content</p>} />
+              <Route path="review" element={<ReviewManager profile={profile}/>} />
               <Route path="application" element={<p>Application tab content</p>} />
               <Route path="*" element={<p>Page not found</p>} />
             </Routes>
           )
         )}
-
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 import { House, Books, Buildings, Files, NotePencil, SignOut } from '@phosphor-icons/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import axiosClient from '../../../api/axiosClient';
 
 // --- CONSTANTS ---
 const PRIMARY_ACCENT = '#014063'; // Dark Navy (For inactive icons/text)
@@ -38,6 +39,16 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, userId, profileStatus })
   // Only show full nav if profile is approved
   const visibleNavItems = profileStatus === 'approved' ? navItems : [];
 
+  const logout= async()=>{
+    try{
+      await axiosClient.post('/api/users/logout',{withCredentials: true} )
+      return true
+    }
+    catch(err){
+      console.error('something went wrong', err)
+    }
+  }
+
   return (
     <aside className="w-60 bg-white p-6 shadow-xl h-screen sticky top-0">
       <div className="flex flex-col items-center mb-8">
@@ -73,14 +84,21 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, userId, profileStatus })
           );
         })}
 
-        <a
-          href="/api/users/logout"
+        <button
+          
+          onClick={async()=>{
+            const success=await logout()
+            if(success){
+              window.location.href='/'
+            }
+            
+          }}
           className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 mt-6"
           style={{ color: PRIMARY_ACCENT }}
         >
           <SignOut size={20} />
           Logout
-        </a>
+        </button>
       </nav>
     </aside>
   );
