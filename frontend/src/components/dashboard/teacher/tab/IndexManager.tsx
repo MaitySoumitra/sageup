@@ -21,7 +21,7 @@ const SECONDARY_COLOR = "#1A9A7D"; // Teal Green
 // --- Utility function to simulate data that isn't directly fetched ---
 // NOTE: The actual logic for calculating total hours and library breakdown 
 // has been moved into the useEffect hook for better data handling based on API responses.
-const simulateData = (data: any[]) => {
+const simulateData = () => {
   return { noteCount: 0, questionCount: 0, solutionCount: 0, totalWorkingHours: 0 };
 };
 
@@ -30,8 +30,8 @@ const IndexManager: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
   const [subjectsCount, setSubjectsCount] = useState(0);
   const [libraryCount, setLibraryCount] = useState(0);
-  const [libraryBreakdown, setLibraryBreakdown] = useState(simulateData([]));
-  const [subjectsStats, setSubjectsStats] = useState(simulateData([]));
+  const [libraryBreakdown, setLibraryBreakdown] = useState(simulateData());
+  const [subjectsStats, setSubjectsStats] = useState(simulateData());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -8,7 +8,6 @@ import {
   SuitcaseSimple, 
   Phone, 
   Envelope, 
-  BookOpen, 
   Clock, 
   FileText,
   ChatCircleDots

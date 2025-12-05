@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import Sidebar from './tab/Sidebar';
 import TutorProfile from './tab/TutorProfile';
 import SubjectManager from './tab/SubjectManager';
@@ -21,6 +21,10 @@ const TeacherDashboard: React.FC = () => {
         const res = await axiosClient.get('/api/profiles/me', { withCredentials: true });
         setProfile(res.data.profile);
         setUser(res.data.profile?.user || { name: 'Teacher' });
+        if (res.data.profile?.status === 'approved') {
+        const subjectsRes = await axiosClient.get('/api/subjects', { withCredentials: true });
+        setSubjects(subjectsRes.data);
+      }
       } catch (err) {
         console.error(err);
       } finally {

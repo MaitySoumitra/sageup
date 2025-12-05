@@ -71,7 +71,6 @@ const ReviewSubmissionSection = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
-    const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);
     const [reviewText, setReviewText] = useState('');
     const [rating, setRating] = useState(0);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -117,7 +116,7 @@ const ReviewSubmissionSection = () => {
         const term = e.target.value;
         setSearchTerm(term);
         setSelectedProfileId(null);
-        setSelectedProfileName(null);
+        
         setMessage(null);
 
         // Only search if term starts with '@' and has subsequent characters
@@ -130,7 +129,7 @@ const ReviewSubmissionSection = () => {
 
     const handleSelectProfile = (profile: any) => {
         setSelectedProfileId(profile._id);
-        setSelectedProfileName(profile.user.name);
+        
         // Set the input field to the selected name (optional, but good UX)
         setSearchTerm(`@${profile.user.name}`); 
         setSearchResults([]); // Hide search results

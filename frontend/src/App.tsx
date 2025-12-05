@@ -14,7 +14,6 @@ function App() {
   return (
     <Routes>
       <Route path="*" element={<Home/>}/>
-      {/* <Route path="/admin/*" element={<AdminApp/>}/> */}
      <Route path="/admin/vidyaru-dashboard" element={<AdminDashboard />} />
      <Route path='/dashboard/:userId/*' element={<TeacherDashboard/>}/>
     </Routes>
