@@ -45,7 +45,7 @@ export const ServicesSection = () => {
 
       {/* Intro text */}
       <div className="relative z-10 text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 font-['Cormorant_Garamond']">
           Trusted Learning for Every Student
         </h2>
         <p className="text-white text-base md:text-lg max-w-xl mx-auto">

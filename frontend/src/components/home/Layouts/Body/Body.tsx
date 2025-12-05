@@ -8,7 +8,7 @@ import { Testimonials } from "./Section/Testimonial";
 
 export const Body = () => {
   return (
-    <div>
+    <div className='font-sans-serif'>
       <Banner />
       <Features/>
       <Profiles/>

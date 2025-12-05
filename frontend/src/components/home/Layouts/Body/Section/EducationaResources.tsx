@@ -21,7 +21,7 @@ const EducationalResources: React.FC = () => {
     <section className="max-w-9xl mx-auto flex flex-col md:flex-row min-h-screen bg-[#0e1a1a] text-white p-8 md:p-16 font-sans">
       {/* Sidebar Title */}
       <div className="md:min-w-[200px] h-full md:pr-10 border-l-4 border-[#00ffc3] pl-4 mb-8 md:mb-0">
-        <h2 className="text-2xl font-bold leading-snug">
+        <h2 className="text-2xl font-bold leading-snug font-['Cormorant_Garamond']">
           Explore
           <br />
           Educational

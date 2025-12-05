@@ -166,7 +166,7 @@ const ReviewSubmissionSection = () => {
         <div className="p-8 bg-gray-50 border border-gray-200 rounded-xl mb-12 shadow-md">
             <h3 className="text-2xl font-bold mb-4" style={{ color: PRIMARY_COLOR }}>✍️ Submit Your Review</h3>
             {/* 1. Teacher Search (Autocomplete/Suggest) */}
-            <div className="mb-6 relative">
+            <div className="mb-6 relative ">
                 <label className="block text-md font-medium text-gray-700 mb-2">Teacher Profile</label>
                 
                 <input
@@ -316,7 +316,7 @@ export const Testimonials = () => {
             
             {/* 🎯 Simplified Header/Title */}
             <div className="text-center ">
-                <h2 className="text-4xl md:text-5xl font-extrabold mb-10" style={{ color: PRIMARY_COLOR }}>
+                <h2 className="text-4xl md:text-5xl font-['Cormorant_Garamond'] font-bold mb-10" style={{ color: PRIMARY_COLOR }}>
                     Student Testimonials 📚
                 </h2>
             </div>

@@ -82,7 +82,7 @@ export const Profiles = () => {
             <div className="container mx-auto px-6 lg:px-16">
                 {/* Section heading */}
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl lg:text-4xl font-bold text-[#002060] mb-3">
+                    <h2 className="text-3xl lg:text-4xl font-bold text-[#002060] mb-3 font-['Cormorant_Garamond']">
                         Find the Right Institute
                     </h2>
                     <p className="text-gray-700 text-lg">
