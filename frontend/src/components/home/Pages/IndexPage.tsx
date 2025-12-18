@@ -6,7 +6,7 @@ import { useCurrentUser } from "../../api/useCurrentUser"
 
 export const IndexPage = () => {
   const {isLoading}=useCurrentUser()
-  if(isLoading){
+  if(!isLoading){
     return <div>Loading...</div>
   }
   return (

@@ -3,7 +3,6 @@ import EducationalResources from "./Section/EducationaResources";
 import { Features } from "./Section/Fetaures";
 import { Profiles } from "./Section/Profile";
 import RecommendedSubjects from "./Section/RecommendedSubjects";
-import { ServicesSection } from "./Section/Services";
 import { Testimonials } from "./Section/Testimonial";
 
 export const Body = () => {
@@ -12,7 +11,6 @@ export const Body = () => {
       <Banner />
       <Features/>
       <Profiles/>
-      <ServicesSection/>
       <RecommendedSubjects/>
       <EducationalResources/>
       <Testimonials/>
