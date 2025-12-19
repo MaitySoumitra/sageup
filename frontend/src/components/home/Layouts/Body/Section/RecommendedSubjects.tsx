@@ -57,11 +57,13 @@ const RecommendedSubjects: React.FC = () => {
   return (
     <section className="max-w-7xl mx-auto py-6 px-6 border border-gray-300 rounded-lg mb-5">
       {/* Header Section */}
-      <div className="flex items-center gap-3 mb-1">
-        <h2 className="text-2xl font-bold text-[#1c1c1c]">Trending Searches Near You</h2>
-        <span className="bg-[#d92228] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">New</span>
-      </div>
-      <p className="text-gray-500 text-sm mb-8">Stay updated with the latest local trends.</p>
+      <h2 className="text-[24px] font-bold text-[#1c1c1c] tracking-tight">
+  Trending Subjects for You
+</h2>
+<p className="text-[#70757a] text-[14px] mb-8">
+  Explore popular topics students are learning right now.
+</p>
+
 
       <div className="relative group">
         {/* Slider Container */}
