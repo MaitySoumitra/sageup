@@ -17,9 +17,11 @@ const RecommendedSubjects: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(4); // Image shows 4 cards
   const [isMobile, setIsMobile] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
 
-  const navigate= useNavigate()
+
+  const navigate = useNavigate()
   const fetchSubjects = useCallback(async () => {
     setLoading(false);
     try {
@@ -54,6 +56,14 @@ const RecommendedSubjects: React.FC = () => {
     if (newIndex > maxIndex) newIndex = maxIndex;
     setIndex(newIndex);
   };
+  const getInitials = (name: string) =>
+    name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+
 
   if (loading) return <div className="p-10 text-center">Loading...</div>;
 
@@ -86,20 +96,28 @@ const RecommendedSubjects: React.FC = () => {
                 style={{ width: `calc(${100 / visibleCards}% - 12px)` }}
               >
                 {/* Left Side: Image */}
-                <div className="w-1/3 h-24 bg-gray-100 overflow-hidden">
-                  <img
-                    src={subject.imageUrl || 'https://via.placeholder.com/150'}
-                    alt={subject.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-1/3 h-24 bg-gray-100 flex items-center justify-center overflow-hidden">
+                  {!subject.imageUrl || imgError ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-700 text-[25px] font-bold">
+                      {getInitials(subject.name)}
+                    </div>
+                  ) : (
+                    <img
+                      src={subject.imageUrl}
+                      alt={subject.name}
+                      className="w-full h-full object-cover"
+                      onError={() => setImgError(true)}
+                    />
+                  )}
                 </div>
+
 
                 {/* Right Side: Content */}
                 <div className="w-2/3 p-4 flex flex-col justify-center">
                   <h3 className="text-lg font-bold text-[#1c1c1c] leading-tight truncate">
                     {subject.name}
                   </h3>
-                 <span className="text-[#1a73e8] font-semibold text-sm mt-1 flex items-center gap-1 hover:underline cursor-pointer">
+                  <span className="text-[#1a73e8] font-semibold text-sm mt-1 flex items-center gap-1 hover:underline cursor-pointer">
                     View Details <CaretRight size={12} weight="bold" />
                   </span>
                 </div>

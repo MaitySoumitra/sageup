@@ -1,7 +1,7 @@
 // src/components/ProfileView/ProfileView.tsx
 
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   MapPin,
   Star,
@@ -47,6 +47,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 // Subject Card
 // Subject Card - Redesigned to match the provided image
 const SubjectCard: React.FC<{ subject: Subject }> = ({ subject }) => (
+  <Link to={`/subject/${subject._id}`} className="block">
   <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col md:flex-row p-4 gap-4 transition-hover hover:shadow-md">
 
     {/* Left: Placeholder for Image (Simulating the Buffet Image) */}
@@ -93,6 +94,7 @@ const SubjectCard: React.FC<{ subject: Subject }> = ({ subject }) => (
       </div>
     </div>
   </div>
+  </Link>
 );
 
 // Library Item Card
