@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { 
-  MapPin, 
-  Star, 
-  SuitcaseSimple, 
-  Phone, 
-  Envelope, 
-  Clock, 
+import {
+  MapPin,
+  Star,
+  SuitcaseSimple,
+  Phone,
+  Envelope,
+  Clock,
   FileText,
   ChatCircleDots
 } from "@phosphor-icons/react";
@@ -25,11 +25,11 @@ const SECONDARY_COLOR = '#1B9B7D'; // Teal Green
 const StarRating = ({ rating }: { rating: number }) => (
   <div className="flex items-center space-x-0.5">
     {[...Array(5)].map((_, i) => (
-      <Star 
-        key={i} 
-        size={20} 
-        weight={i < rating ? "fill" : "regular"} 
-        color={SECONDARY_COLOR} 
+      <Star
+        key={i}
+        size={20}
+        weight={i < rating ? "fill" : "regular"}
+        color={SECONDARY_COLOR}
       />
     ))}
     <span className="text-lg font-semibold ml-2 text-gray-800">{rating.toFixed(1)}</span>
@@ -45,13 +45,52 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 );
 
 // Subject Card
+// Subject Card - Redesigned to match the provided image
 const SubjectCard: React.FC<{ subject: Subject }> = ({ subject }) => (
-  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-    <h4 className="text-lg font-semibold" style={{ color: SECONDARY_COLOR }}>{subject.name}</h4>
-    <p className="text-sm text-gray-600 mb-2">{subject.category} • <span className="capitalize">{subject.level}</span></p>
-    <div className="flex flex-wrap gap-2 text-xs text-gray-700">
-      <div className="flex items-center gap-1"><MapPin size={14} /> {subject.location || 'Profile Location'}</div>
-      <div className="flex items-center gap-1"><Clock size={14} /> {subject.availability.days.join(', ')}</div>
+  <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col md:flex-row p-4 gap-4 transition-hover hover:shadow-md">
+
+    {/* Left: Placeholder for Image (Simulating the Buffet Image) */}
+    <div className="w-full md:w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center text-gray-400">
+      <SuitcaseSimple size={40} weight="thin" />
+    </div>
+
+    {/* Center: Details */}
+    <div className="flex-1">
+      <div className="flex justify-between items-start">
+        <h4 className="text-xl font-bold text-gray-900">{subject.name}</h4>
+        <div className="flex items-center bg-green-600 text-white px-2 py-0.5 rounded text-sm font-bold">
+          4.7 <Star size={14} weight="fill" className="ml-1" />
+        </div>
+      </div>
+
+      <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+        <MapPin size={16} /> {subject.location || 'Location details available'}
+      </p>
+
+      {/* Folders/Categories Tags */}
+      <div className="flex gap-2 mt-3 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="border rounded-md px-3 py-1 flex-shrink-0 text-center bg-gray-50">
+          <p className="text-xs font-semibold text-gray-800">{subject.category}</p>
+          <p className="text-[10px] text-gray-500">₹1,200 / session</p>
+        </div>
+        <div className="border rounded-md px-3 py-1 flex-shrink-0 text-center bg-gray-50">
+          <p className="text-xs font-semibold text-gray-800">{subject.level}</p>
+          <p className="text-[10px] text-gray-500">Certified</p>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-2 mt-4">
+        <button className="flex-1 bg-green-700 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-bold">
+          <Phone size={18} weight="fill" /> Call Now
+        </button>
+        <button className="flex-1 border-2 border-green-700 text-green-700 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-bold hover:bg-green-50">
+          <ChatCircleDots size={18} weight="fill" /> WhatsApp
+        </button>
+        <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-bold">
+          Enquire
+        </button>
+      </div>
     </div>
   </div>
 );
@@ -61,17 +100,16 @@ const LibraryItemCard: React.FC<{ item: LibraryItem }> = ({ item }) => (
   <div className="p-4 bg-white rounded-lg border-l-4" style={{ borderLeftColor: SECONDARY_COLOR }}>
     <div className="flex items-center justify-between">
       <h4 className="text-base font-semibold text-gray-800">{item.title}</h4>
-      <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
-        item.type === 'note' ? 'bg-blue-100 text-blue-700' :
-        item.type === 'solution' ? 'bg-green-100 text-green-700' :
-        'bg-yellow-100 text-yellow-700'
-      }`}>
+      <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${item.type === 'note' ? 'bg-blue-100 text-blue-700' :
+          item.type === 'solution' ? 'bg-green-100 text-green-700' :
+            'bg-yellow-100 text-yellow-700'
+        }`}>
         {item.type}
       </span>
     </div>
     <p className="text-sm text-gray-600 my-1">{item.category}</p>
     <a href={item.fileUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium" style={{ color: PRIMARY_COLOR }}>
-      <FileText size={16} className="inline-block mr-1"/>
+      <FileText size={16} className="inline-block mr-1" />
       Download Resource
     </a>
   </div>
@@ -82,7 +120,7 @@ const ReviewCard: React.FC<{ review: Review }> = ({ review }) => (
   <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
     <div className="flex justify-between items-start mb-2">
       <div className="font-semibold text-gray-900 flex items-center gap-2">
-        <ChatCircleDots size={20} style={{ color: PRIMARY_COLOR }} weight="fill"/>
+        <ChatCircleDots size={20} style={{ color: PRIMARY_COLOR }} weight="fill" />
         {review.user.name}
       </div>
       <div className="flex-shrink-0">
@@ -97,7 +135,7 @@ const ReviewCard: React.FC<{ review: Review }> = ({ review }) => (
 // --- Main Component ---
 export const ProfileView = () => {
   // Use a route parameter for the profile ID, e.g., /profile/:profileId
-  const { profileId } = useParams<{ profileId: string }>(); 
+  const { profileId } = useParams<{ profileId: string }>();
   const [profile, setProfile] = useState<FullProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +149,7 @@ export const ProfileView = () => {
     setError(null);
     try {
       // Adjusted endpoint to fetch all related data
-      const res = await axiosClient.get(`/api/profiles/${profileId}/full`); 
+      const res = await axiosClient.get(`/api/profiles/${profileId}/full`);
       setProfile(res.data);
     } catch (err) {
       console.error("Error fetching full profile:", err);
@@ -132,7 +170,7 @@ export const ProfileView = () => {
   if (error) {
     return <div className="text-center p-20 text-xl text-red-600">{error}</div>;
   }
-  
+
   if (!profile) {
     return <div className="text-center p-20 text-xl">No profile data found.</div>;
   }
@@ -141,11 +179,11 @@ export const ProfileView = () => {
   return (
     <div className="min-h-screen pt-12 pb-20" style={{ backgroundColor: '#f9fafb' }}>
       <div className="container mx-auto px-6 lg:px-16 max-w-7xl">
-        
+
         {/* Header Section */}
         <header className="mb-10 p-8 rounded-2xl shadow-xl" style={{ backgroundColor: PRIMARY_COLOR, color: 'white' }}>
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            
+
             {/* Profile Image / Initials */}
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center flex-shrink-0 text-3xl font-bold" style={{ color: PRIMARY_COLOR, border: `3px solid ${SECONDARY_COLOR}` }}>
               {profile.user.name ? profile.user.name[0] : 'P'}
@@ -159,7 +197,7 @@ export const ProfileView = () => {
               <p className="text-xl font-medium mb-3" style={{ color: SECONDARY_COLOR }}>
                 {profile.type.replace(/_/g, ' ').toUpperCase()}
               </p>
-              
+
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-6 gap-y-2 text-sm">
                 <div className="flex items-center gap-2 font-medium">
                   <MapPin size={20} color="white" weight="fill" />
@@ -180,7 +218,7 @@ export const ProfileView = () => {
 
         {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Left Column (Main Description & Contact) */}
           <div className="lg:col-span-2 space-y-8">
             <SectionCard title="About Us">
@@ -189,7 +227,7 @@ export const ProfileView = () => {
 
             <SectionCard title="Areas of Expertise (Subjects)">
               {profile.subjects && profile.subjects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-6"> {/* Changed to flex-col for the list look */}
                   {profile.subjects.map(subject => (
                     <SubjectCard key={subject._id} subject={subject} />
                   ))}
@@ -199,7 +237,7 @@ export const ProfileView = () => {
               )}
             </SectionCard>
           </div>
-          
+
           {/* Right Column (Contact Info & Resources) */}
           <div className="lg:col-span-1 space-y-8">
             <SectionCard title="Contact Information">

@@ -4,6 +4,7 @@ import './App.css'
 import { Home } from './components/home/Home'
 import AdminDashboard from './components/dashboard/admin/AdminDashboard'
 import TeacherDashboard from './components/dashboard/teacher/TeacherDashboard'
+import SubjectDetails from './components/home/Pages/SubjectDetails'
 
 
 
@@ -16,6 +17,7 @@ function App() {
       <Route path="*" element={<Home/>}/>
      <Route path="/admin/vidyaru-dashboard" element={<AdminDashboard />} />
      <Route path='/dashboard/:userId/*' element={<TeacherDashboard/>}/>
+     <Route path="/subject/:id" element={<SubjectDetails />} />
     </Routes>
   )
 }

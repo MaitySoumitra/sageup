@@ -25,6 +25,7 @@ export interface Subject {
     days: string[];
     timeSlots: string[];
   };
+  imageUrl?: string;
 }
 
 export interface LibraryItem {
