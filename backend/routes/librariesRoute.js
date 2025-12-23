@@ -36,9 +36,23 @@ router.post('/upload', userAuth, upload.single('pdf'), async (req, res) => {
 });
 
 // 📚 Get all library items
+// 📚 Get library items with optional filter
 router.get('/', async (req, res) => {
   try {
-    const items = await Libraries.find().populate('uploadedBy', 'name');
+    const { category } = req.query; // Extracts ?category=value from URL
+    let filter = {};
+
+    if (category) {
+      // This checks if 'category' matches EITHER the category field OR the type field
+      filter = {
+        $or: [
+          { type: category },
+          { category: category }
+        ]
+      };
+    }
+
+    const items = await Libraries.find(filter).populate('uploadedBy', 'name');
     res.json(items);
   } catch (error) {
     res.status(500).json({ error: error.message });
